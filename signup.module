@@ -124,7 +124,15 @@ function signup_form(&$form_state, $my_values = array()) {
 			'Mr.' => t('Mr.'),
 			'Ms.' => t('Ms.'),
 			'Miss' => t('Miss'),
-			'Mrs.' => t('Mrs.')
+			'Mrs.' => t('Mrs.'),
+			'Prof.' => t('Prof.'),
+			'Rabbi' => t('Rabbi'),
+			'Hon.' => t('Hon.'),
+			'Assemblymember' => t('Assemblymember'),
+			'Chancellor' => t('Chancellor'),
+			'Governor' => t('Governor'),
+			'Representative' => t('Representative'),
+			'Senator' => t('Senator')
 		),
 		'#required' => FALSE,
 	);
@@ -155,6 +163,13 @@ function signup_form(&$form_state, $my_values = array()) {
 		'#size' => 27,
 		'#required' => FALSE,
 	);
+	$form['personal_info']['phone_ext'] = array(
+		'#type' => 'textfield',
+		'#title' => t(''),
+		'#size' => 6,
+		'#required' => FALSE,
+		'#description' => t('extension')
+	);
 	$form['employment'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Employer Information'),
@@ -166,13 +181,13 @@ function signup_form(&$form_state, $my_values = array()) {
 	$form['employment']['title'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Title'),
-		'#size' => 40,
+		'#size' => 50,
 		'#required' => FALSE,
 	);
 	$form['employment']['employer'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Employer'),
-		'#size' => 40,
+		'#size' => 50,
 		'#required' => FALSE,
 	);
 	$form['employment']['employer_type'] = array(
@@ -249,13 +264,13 @@ function signup_form(&$form_state, $my_values = array()) {
 	$form['mailing_address']['address_1'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Address 1'),
-		'#size' => 40,
+		'#size' => 50,
 		'#required' => FALSE,
 	);
 	$form['mailing_address']['address_2'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Address 2'),
-		'#size' => 40,
+		'#size' => 50,
 		'#required' => FALSE,
 	);
 	$form['mailing_address']['city'] = array(
@@ -357,6 +372,7 @@ function signup_form_validate($form, &$form_state) {
 	$lname = $form_state['values']['last'];
 	$cc_phone = $form_state['values']['country_phone'];
 	$phone = $form_state['values']['phone'];
+	$phone_ext = $form_state['values']['phone_ext'];
 	$title = $form_state['values']['title'];
 	$employer = $form_state['values']['employer'];
 	$employer_type = $form_state['values']['employer_type'];
@@ -372,6 +388,24 @@ function signup_form_validate($form, &$form_state) {
 		form_set_error('email', t('The email address ' . $email . ' is not a valid email address.'));
 	}
 }
+
+function format_phone($phone,$cc_phone){
+	// formats a phone number in US or International format
+	// for consistent input in to database
+	// US (NANP - North American Numbering Plan) phone types are: JM, TC, KN, LC, VC, MS, GD, DO, KY, AG, BS, VG, AI, BM
+
+	$formattedPhone = '';
+	
+	$sep = "."; # the separator for areacode.prefix.suffix; usually "-" or "."
+	
+	$formattedPhone = preg_replace('/\D/', '', $phone); # remove non-numbers; need to rework to keep [-0-9\s\\/+\(\)]*
+	
+	if ( $cc_phone == '1' ){
+		$formattedPhone = substr($phone,0,3).$sep.substr($phone,3,3).$sep.substr($phone,6,4); // format for US (NANP)
+	} 
+	
+	return $formattedPhone;
+} // function format_phone_number
 
 
 /**
@@ -398,7 +432,8 @@ function signup_form_submit($form, &$form_state) {
 			$lname = signup_trim($form_state['values']['last']);
 			$cc_phone = signup_trim($form_state['values']['country_phone']);
 			$temp_phone = signup_trim($form_state['values']['phone']);
-			$phone = $cc_phone . '-' . $temp_phone;
+			$phone_ext = signup_trim($form_state['values']['phone_ext']);
+			$phone = '+'.$cc_phone . ' ' . format_phone($temp_phone,$cc_phone) . ' x' . $phone_ext;
 			$title = signup_trim($form_state['values']['title']);
 			$employer = signup_trim($form_state['values']['employer']);
 			$employer_type = $form_state['values']['employer_type'];
@@ -513,10 +548,260 @@ function signup_data_block_submit($form, &$form_state) {
  * pulling data from the database.
  *
  * @return array of options
+ *
+ * list of countries taken from: http://www.iso.org/iso/english_country_names_and_code_elements
+ * countries that are listed in USPS state list (e.g. receive mail services from US) are 
+ * removed and Country for the regions should be US
  */
 function _signup_get_first_dropdown_options() {
 	// drupal_map_assoc() just makes an array('Strings' => 'Strings'...).
-	return drupal_map_assoc(array(t('- select -'), t('US'), t('Canada')));
+	return drupal_map_assoc(array(
+		t('- select -'), 
+		t('US'), 
+		t('Canada'),
+		t('Afghanistan'),
+		t('Åland Islands'),
+		t('Albania'),
+		t('Algeria'),
+		t('Andorra'),
+		t('Angola'),
+		t('Anguilla'),
+		t('Antarctica'),
+		t('Antigua And Barbuda'),
+		t('Argentina'),
+		t('Armenia'),
+		t('Aruba'),
+		t('Australia'),
+		t('Austria'),
+		t('Azerbaijan'),
+		t('Bahamas'),
+		t('Bahrain'),
+		t('Bangladesh'),
+		t('Barbados'),
+		t('Belarus'),
+		t('Belgium'),
+		t('Belize'),
+		t('Benin'),
+		t('Bermuda'),
+		t('Bhutan'),
+		t('Bolivia, Plurinational State Of'),
+		t('Bosnia And Herzegovina'),
+		t('Botswana'),
+		t('Bouvet Island'),
+		t('Brazil'),
+		t('British Indian Ocean Territory'),
+		t('Brunei Darussalam'),
+		t('Bulgaria'),
+		t('Burkina Faso'),
+		t('Burundi'),
+		t('Cambodia'),
+		t('Cameroon'),
+		t('Canada'),
+		t('Cape Verde'),
+		t('Cayman Islands'),
+		t('Central African Republic'),
+		t('Chad'),
+		t('Chile'),
+		t('China'),
+		t('Christmas Island'),
+		t('Cocos (Keeling) Islands'),
+		t('Colombia'),
+		t('Comoros'),
+		t('Congo'),
+		t('Congo, The Democratic Republic Of The'),
+		t('Cook Islands'),
+		t('Costa Rica'),
+		t('Côte D’ivoire'),
+		t('Croatia'),
+		t('Cuba'),
+		t('Cyprus'),
+		t('Czech Republic'),
+		t('Denmark'),
+		t('Djibouti'),
+		t('Dominica'),
+		t('Dominican Republic'),
+		t('Ecuador'),
+		t('Egypt'),
+		t('El Salvador'),
+		t('Equatorial Guinea'),
+		t('Eritrea'),
+		t('Estonia'),
+		t('Ethiopia'),
+		t('Falkland Islands (malvinas)'),
+		t('Faroe Islands'),
+		t('Fiji'),
+		t('Finland'),
+		t('France'),
+		t('French Guiana'),
+		t('French Polynesia'),
+		t('French Southern Territories'),
+		t('Gabon'),
+		t('Gambia'),
+		t('Georgia'),
+		t('Germany'),
+		t('Ghana'),
+		t('Gibraltar'),
+		t('Greece'),
+		t('Greenland'),
+		t('Grenada'),
+		t('Guadeloupe'),
+		t('Guam'),
+		t('Guatemala'),
+		t('Guernsey'),
+		t('Guinea'),
+		t('Guinea-bissau'),
+		t('Guyana'),
+		t('Haiti'),
+		t('Heard Island And Mcdonald Islands'),
+		t('Holy See (Vatican City State)'),
+		t('Honduras'),
+		t('Hong Kong'),
+		t('Hungary'),
+		t('Iceland'),
+		t('India'),
+		t('Indonesia'),
+		t('Iran, Islamic Republic Of'),
+		t('Iraq'),
+		t('Ireland'),
+		t('Isle Of Man'),
+		t('Israel'),
+		t('Italy'),
+		t('Jamaica'),
+		t('Japan'),
+		t('Jersey'),
+		t('Jordan'),
+		t('Kazakhstan'),
+		t('Kenya'),
+		t('Kiribati'),
+		t('Korea, Democratic People’s Republic Of'),
+		t('Korea, Republic Of'),
+		t('Kuwait'),
+		t('Kyrgyzstan'),
+		t('Lao People’s Democratic Republic'),
+		t('Latvia'),
+		t('Lebanon'),
+		t('Lesotho'),
+		t('Liberia'),
+		t('Libyan Arab Jamahiriya'),
+		t('Liechtenstein'),
+		t('Lithuania'),
+		t('Luxembourg'),
+		t('Macao'),
+		t('Macedonia, The Former Yugoslav Republic Of'),
+		t('Madagascar'),
+		t('Malawi'),
+		t('Malaysia'),
+		t('Maldives'),
+		t('Mali'),
+		t('Malta'),
+		t('Martinique'),
+		t('Mauritania'),
+		t('Mauritius'),
+		t('Mayotte'),
+		t('Mexico'),
+		t('Moldova, Republic Of'),
+		t('Monaco'),
+		t('Mongolia'),
+		t('Montenegro'),
+		t('Montserrat'),
+		t('Morocco'),
+		t('Mozambique'),
+		t('Myanmar'),
+		t('Namibia'),
+		t('Nauru'),
+		t('Nepal'),
+		t('Netherlands'),
+		t('Netherlands Antilles'),
+		t('New Caledonia'),
+		t('New Zealand'),
+		t('Nicaragua'),
+		t('Niger'),
+		t('Nigeria'),
+		t('Niue'),
+		t('Norfolk Island'),
+		t('Northern Mariana Islands'),
+		t('Norway'),
+		t('Oman'),
+		t('Pakistan'),
+		t('Palestinian Territory, Occupied'),
+		t('Panama'),
+		t('Papua New Guinea'),
+		t('Paraguay'),
+		t('Peru'),
+		t('Philippines'),
+		t('Pitcairn'),
+		t('Poland'),
+		t('Portugal'),
+		t('Qatar'),
+		t('Réunion'),
+		t('Romania'),
+		t('Russian Federation'),
+		t('Rwanda'),
+		t('Saint Barthélemy'),
+		t('Saint Helena'),
+		t('Saint Kitts And Nevis'),
+		t('Saint Lucia'),
+		t('Saint Martin'),
+		t('Saint Pierre And Miquelon'),
+		t('Saint Vincent And The Grenadines'),
+		t('Samoa'),
+		t('San Marino'),
+		t('Sao Tome And Principe'),
+		t('Saudi Arabia'),
+		t('Senegal'),
+		t('Serbia'),
+		t('Seychelles'),
+		t('Sierra Leone'),
+		t('Singapore'),
+		t('Slovakia'),
+		t('Slovenia'),
+		t('Solomon Islands'),
+		t('Somalia'),
+		t('South Africa'),
+		t('South Georgia And The South Sandwich Islands'),
+		t('Spain'),
+		t('Sri Lanka'),
+		t('Sudan'),
+		t('Suriname'),
+		t('Svalbard And Jan Mayen'),
+		t('Swaziland'),
+		t('Sweden'),
+		t('Switzerland'),
+		t('Syrian Arab Republic'),
+		t('Taiwan, Province Of China'),
+		t('Tajikistan'),
+		t('Tanzania, United Republic Of'),
+		t('Thailand'),
+		t('Timor-leste'),
+		t('Togo'),
+		t('Tokelau'),
+		t('Tonga'),
+		t('Trinidad And Tobago'),
+		t('Tunisia'),
+		t('Turkey'),
+		t('Turkmenistan'),
+		t('Turks And Caicos Islands'),
+		t('Tuvalu'),
+		t('Uganda'),
+		t('Ukraine'),
+		t('United Arab Emirates'),
+		t('United Kingdom'),
+		t('United States'),
+		t('United States Minor Outlying Islands'),
+		t('Uruguay'),
+		t('Uzbekistan'),
+		t('Vanuatu'),
+		t('Vatican City State'),"see Holy See",
+		t('Venezuela, Bolivarian Republic Of'),
+		t('Viet Nam'),
+		t('Virgin Islands, British'),
+		t('Virgin Islands, U.S.'),
+		t('Wallis And Futuna'),
+		t('Western Sahara'),
+		t('Yemen'),
+		t('Zambia'),
+		t('Zimbabwe')	
+		));
 }
 
 /**
@@ -526,6 +811,9 @@ function _signup_get_first_dropdown_options() {
  * @param key. This will determine which set of options is returned.
  *
  * @return array of options
+ *
+ * list of US states taken from: http://zip4.usps.com/zip4/zcl_0_landing_state.htm
+ * list of CA states taken from: http://www.columbia.edu/kermit/postal.html#canada
  */
 function _signup_get_second_dropdown_options($key = '') {
 	$options = array(
@@ -544,6 +832,7 @@ function _signup_get_second_dropdown_options($key = '') {
 			t('Connecticut'),
 			t('Delaware'),
 			t('District of Columbia'),
+			t('Federated States of Micronesia'),
 			t('Florida'),
 			t('Georgia'),
 			t('Guam'),
@@ -556,6 +845,7 @@ function _signup_get_second_dropdown_options($key = '') {
 			t('Kentucky'),
 			t('Louisiana'),
 			t('Maine'),
+			t('Marshall Islands'),
 			t('Maryland'),
 			t('Massachusetts'),
 			t('Michigan'),
@@ -571,10 +861,11 @@ function _signup_get_second_dropdown_options($key = '') {
 			t('New York'),
 			t('North Carolina'),
 			t('North Dakota'),
-			t('Northern Marianas Islands'),
+			t('Northern Mariana Islands'),
 			t('Ohio'),
 			t('Oklahoma'),
 			t('Oregon'),
+			t('Palau'),
 			t('Pennsylvania'),
 			t('Puerto Rico'),
 			t('Rhode Island'),
@@ -584,24 +875,34 @@ function _signup_get_second_dropdown_options($key = '') {
 			t('Texas'),
 			t('Utah'),
 			t('Vermont'),
-			t('Virginia'),
 			t('Virgin Islands'),
+			t('Virginia'),
 			t('Washington'),
 			t('West Virginia'),
 			t('Wisconsin'),
-			t('Wyoming')
+			t('Wyoming'),
+			t('Armed Forces Africa'),
+			t('Armed Forces Americas'),
+			t('Armed Forces Canada'),
+			t('Armed Forces Europe'),
+			t('Armed Forces Middle East'),
+			t('Armed Forces Pacific')			
 		)),
 		t('Canada') => drupal_map_assoc(array(
 			t('- select -'),
 			t('Alberta'),
 			t('British Columbia'),
+			t('Manitoba'),
 			t('New Brunswick'),
 			t('Newfoundland and Labrador'),
 			t('Nova Scotia'),
+			t('Northwest Territories'),
+			t('Nunavut'),
 			t('Ontario'),
 			t('Prince Edward Island'),
 			t('Quebec'),
-			t('Saskatchewan')
+			t('Saskatchewan'),
+			t('Yukon Territory')
 		)),
 	);
 	if (isset($options[$key])) {
