@@ -29,7 +29,6 @@ function signup_menu() {
 		'access callback' => TRUE,
 		'type' => MENU_CALLBACK,
 	);
-
 	return $items;
 }
 
@@ -58,7 +57,6 @@ function signup_init() {
 	drupal_add_css(drupal_get_path('module', 'signup') . '/signup.css');
 }
 
-
 /**
  * Form builder function to create a form showing dependent dropdowns. The
  * second dropdown has its values populated based on the first.
@@ -66,8 +64,7 @@ function signup_init() {
  * @param $my_values
  */
 function signup_form(&$form_state, $my_values = array()) {
-	$form = array();
-
+	
 	// get the list of options to populate the first dropdown
 	$initial_options = _signup_get_first_dropdown_options();
 
@@ -77,25 +74,26 @@ function signup_form(&$form_state, $my_values = array()) {
 	// second dropdown.
 	$master_selection = !empty($form_state['values']['master_dropdown']) ? $form_state['values']['master_dropdown'] : t('- select -');
 
+    $form = array();
 	$form['intro'] = array(
 		'#prefix' => '<div id="form-intro">',
 		'#suffix' => '</div>',
-		'#type' => 'markup',
+		'#type'   => 'markup',
 		'#weight' => 0,
-		'#value' => t('This is the intro message')
+		'#value'  => t('To complete your signup and to serve you better we’d be grateful if you would take a moment to supply us with more information.')
 	);
 	$form['email_address'] = array(
-		'#type' => 'fieldset',
-		'#title' => t(''),
+		'#type'   => 'fieldset',
+		'#title'  => t(''),
 		'#weight' => 1,
 		'#attributes' => array(
 			'id' => 'email-address'
 		)
 	);
 	$form['email_address']['temp_email'] = array(
-		'#type' => 'textfield',
+		'#type'  => 'textfield',
 		'#title' => t('Email'),
-		'#size' => 40,
+		'#size'  => 40,
 		'#required' => TRUE,
 	);
 	$form['email_address']['email'] = array(
@@ -133,7 +131,7 @@ function signup_form(&$form_state, $my_values = array()) {
 			'Governor' => t('Governor'),
 			'Representative' => t('Representative'),
 			'Senator' => t('Senator')
-		),
+		  ),
 		'#required' => FALSE,
 	);
 	$form['personal_info']['first'] = array(
@@ -151,16 +149,19 @@ function signup_form(&$form_state, $my_values = array()) {
 	$form['personal_info']['country_phone'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Phone'),
-		'#size' => 6,
+		'#size' => 3,
 		'#default_value' => '1',
 		'#maxlength' => 3,
 		'#required' => FALSE,
-		'#description' => t('country code')
+		'#description' => t('country code'),
+		'#attributes' => array(
+			'id' => 'phone_cc'
+		)
 	);
 	$form['personal_info']['phone'] = array(
 		'#type' => 'textfield',
 		'#title' => t(''),
-		'#size' => 27,
+		'#size' => 17,
 		'#required' => FALSE,
 	);
 	$form['personal_info']['phone_ext'] = array(
@@ -168,7 +169,7 @@ function signup_form(&$form_state, $my_values = array()) {
 		'#title' => t(''),
 		'#size' => 6,
 		'#required' => FALSE,
-		'#description' => t('extension')
+		'#description' => t('extension'),
 	);
 	$form['employment'] = array(
 		'#type' => 'fieldset',
@@ -182,13 +183,13 @@ function signup_form(&$form_state, $my_values = array()) {
 		'#type' => 'textfield',
 		'#title' => t('Title'),
 		'#size' => 50,
-		'#required' => FALSE,
+		'#required' => TRUE,
 	);
 	$form['employment']['employer'] = array(
 		'#type' => 'textfield',
 		'#title' => t('Employer'),
 		'#size' => 50,
-		'#required' => FALSE,
+		'#required' => TRUE,
 	);
 	$form['employment']['employer_type'] = array(
 		'#type' => 'select',
@@ -219,8 +220,8 @@ function signup_form(&$form_state, $my_values = array()) {
 			'School Leader' => t('School Leader'),
 			'Induction Leader' => t('Induction Leader'),
 			'Beginning Teacher' => t('Beginning Teacher'),
-			'Mentor Teacher' => t('Mentor Teacher'),
-			'Pre K-12 Teacher' => t('Pre K-12 Teacher'),
+			'Mentor' => t('Mentor'),
+			'Teacher' => t('Teacher'),
 			'Union Leader' => t('Union Leader'),
 			'Central Office Administrator / Coordinator' => t('Central Office Administrator / Coordinator'),
 			'University Faculty / Supervisor' => t('University Faculty / Supervisor'),
@@ -260,6 +261,7 @@ function signup_form(&$form_state, $my_values = array()) {
 			// 'event' => 'change', // default value: does not need to be set explicitly.
 		),
 		'#attributes' => array('class' => 'master-dropdown'),
+		'#description' => t('Select country; for US & Canada, state list below will be populated accordingly.'), 
 	);
 	$form['mailing_address']['address_1'] = array(
 		'#type' => 'textfield',
@@ -276,7 +278,7 @@ function signup_form(&$form_state, $my_values = array()) {
 	$form['mailing_address']['city'] = array(
 		'#type' => 'textfield',
 		'#title' => t('City'),
-		'#size' => 25,
+		'#size' => 30,
 		'#required' => FALSE,
 	);
 	// The CSS for this module hides this next button if JS is enabled.
@@ -295,7 +297,7 @@ function signup_form(&$form_state, $my_values = array()) {
 
 	$form['mailing_address']['dependent_dropdown_holder']['dependent_dropdown'] = array(
 		'#type' => 'select',
-		'#title' => t('State/Provence'),
+		'#title' => t('State/Province'),
 
 		// when the form is rebuilt during processing (either AJAX or multistep),
 		// the $master_selction variable will now have the new value and so the
@@ -305,9 +307,9 @@ function signup_form(&$form_state, $my_values = array()) {
 	);
 	$form['mailing_address']['zip_code'] = array(
 		'#type' => 'textfield',
-		'#title' => t('Zip Code'),
+		'#title' => t('Mailing Code'),
 		'#size' => 10,
-		'#maxlength' => 5,
+		'#maxlength' => 10,
 		'#required' => TRUE,
 	);
 	$form['submit'] = array(
@@ -321,9 +323,23 @@ function signup_form(&$form_state, $my_values = array()) {
 	drupal_add_css(drupal_get_path('module','signup') . '/css/signup.css');
 	// Add additional validation using javaScript
 	drupal_add_js(drupal_get_path('module','signup') . '/js/jquery.validate.min.js');
+	drupal_add_js(drupal_get_path('module','signup') . '/js/jquery.example.js');
 	drupal_add_js(drupal_get_path('module','signup') . '/js/jquery.cookie.js');
 	drupal_add_js(drupal_get_path('module','signup') . '/js/signup.form.js');
-	
+	drupal_add_js("$(document).ready(function(){
+		$('input#edit-email').example('Please confirm your email address.');
+		$('input#edit-first').example('Please enter your first name.');
+		$('input#edit-last').example('Please enter your last name');
+		$('input#edit-phone').example('888.555.1212');
+		$('input#edit-phone-ext').example('1254');
+		$('input#edit-address-1').example('Postal Street Address (50 chars max)');
+		$('input#edit-address-2').example('Suite, Department, School, etc. (50 chars max)');
+		$('input#edit-city').example('Postal City');
+		$('input#edit-zip-code').example('95060-2243');
+		$('input#edit-title').example('Please enter your preferred job title.');
+		$('input#edit-employer').example('Please provide the name of your employer');
+	}); ",'inline');
+
 	if($form_state['ahah_submission']){
 	    // Clear the form errors.  We don't need to show any validation errors if this is an ahah submit, not a final submit
 	    drupal_get_messages('error');
@@ -383,29 +399,38 @@ function signup_form_validate($form, &$form_state) {
 	$country = $form_state['values']['master_dropdown'];
 	$state = $form_state['values']['dependant_dropdown'];
 	$zip_code = $form_state['values']['zip_code'];
-		
+	
+// 	if (($address_1 == '') && ($address_2 == '')){
+// 	  form_set_error('address_1', t('Please list a postal address so that you may receive our postal mailings.'));
+// 	}
+// 	if ( $city == '' ){
+// 	  form_set_error('city', t('Please list a postal address so that you may receive our postal mailings.'));
+// 	}
 	if (!signup_valid_email_address($email)) {
 		form_set_error('email', t('The email address ' . $email . ' is not a valid email address.'));
 	}
-}
 
-function format_phone($phone,$cc_phone){
+	$test_country = ( $country=="US" || $country =="CA" || $country =="United States" || $country =="Canada" )? "US" : "INT";
+    if ($test_country=="US"){
+       $msg_err = !( signup_valid_postal_code( $zip_code,$test_country ))? '' : t('Please enter a valid postal code.');
+       //$zip_code = (($msg_err !='') && ( $zip_code != ''))? signup_format_postal_code($zip_code,$test_country) : $zip_code;
+    }
+
+
+}// end function signup form validate
+
+function signup_format_phone($phone,$cc_phone){
 	// formats a phone number in US or International format
 	// for consistent input in to database
 	// US (NANP - North American Numbering Plan) phone types are: JM, TC, KN, LC, VC, MS, GD, DO, KY, AG, BS, VG, AI, BM
-
 	$formattedPhone = '';
-	
 	$sep = "."; # the separator for areacode.prefix.suffix; usually "-" or "."
-	
 	$formattedPhone = preg_replace('/\D/', '', $phone); # remove non-numbers; need to rework to keep [-0-9\s\\/+\(\)]*
-	
 	if ( $cc_phone == '1' ){
-		$formattedPhone = substr($phone,0,3).$sep.substr($phone,3,3).$sep.substr($phone,6,4); // format for US (NANP)
+		$formattedPhone = substr($formattedPhone,0,3).$sep.substr($formattedPhone,3,3).$sep.substr($formattedPhone,6,4); // format for US (NANP)
 	} 
-	
 	return $formattedPhone;
-} // function format_phone_number
+} // function signup_format_phone
 
 
 /**
@@ -433,7 +458,7 @@ function signup_form_submit($form, &$form_state) {
 			$cc_phone = signup_trim($form_state['values']['country_phone']);
 			$temp_phone = signup_trim($form_state['values']['phone']);
 			$phone_ext = signup_trim($form_state['values']['phone_ext']);
-			$phone = '+'.$cc_phone . ' ' . format_phone($temp_phone,$cc_phone) . ' x' . $phone_ext;
+			$phone = signup_format_phone($temp_phone,$cc_phone);
 			$title = signup_trim($form_state['values']['title']);
 			$employer = signup_trim($form_state['values']['employer']);
 			$employer_type = $form_state['values']['employer_type'];
@@ -473,14 +498,31 @@ function signup_form_submit($form, &$form_state) {
 			}
 			
 			$zip_code = signup_trim($form_state['values']['zip_code']);
-			if (db_result(db_query("SELECT COUNT(*) FROM {signup} WHERE LOWER(email1) = LOWER('%s')", $email)) > 0) {
-				db_query("UPDATE {signup} SET sal = '%s', first_name = '%s', last_name = '%s', phone = '%s', title = '%s', employer = '%s', employer_type = '%s', role = '%s', address_type = '%s', address_1 = '%s', address_1 = '%s', city = '%s', state = '%s', country = '%s', zip_code = '%s' WHERE email1 = '%s'", $sal, $fname, $lname, $phone, $title, $employer, $employer_type, $role, $address_type, $address_1, $address_2, $city, $state, $country, $zip_code, $email);
-				drupal_set_message(t('Thank you, your information has been updated.'));
-				drupal_set_message('<pre>' . print_r($address_type, TRUE) . '</pre>');
-			} else {
-				db_query("INSERT INTO {signup} (email1, sal, first_name, last_name, phone, title, employer, employer_type, role, address_1, address_2, city, state, country, zip_code) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", $email, $sal, $fname, $lname, $phone, $title, $employer, $employer_type, $role, $address_type, $address_1, $address_2, $city, $state, $country, $zip_code);
-				drupal_set_message(t('Thank you for signing up.'));
-				drupal_set_message('<pre>' . print_r($address_type, TRUE) . '</pre>');
+			
+			// let's form a nice thank you message that tells them what we received
+			$li_name = ( $sal == '' )? $fname.' '.$lname : $sal.' '.$fname.' '.$lname;
+			$li_phone = ( $phone != '' )? $cc_phone.' '.$phone : '';
+			$li_phone = (( $phone != '' ) && ( $phone_ext != '' ))? $li_phone.' x'.$phone_ext : $li_phone;
+			$li_phone = ( $li_phone != '' )? '<li>'.$li_phone.'</li>' : '';
+			$li_address_2 = ( $li_address_2 != '' )? '<li>Address 2: '.$li_address_2.'</li>' : '';
+			//$li_country = ( $state != '' )? '<li>State: '.$state.', Country: '.$country.' '.$zip_code.'</li>' : '<li>Country: '.$country.' '.$zip_code.'</li>';
+			$li_country = ( $state != '' )? '<li><em>State:</em> '.$state.'<br />Country: '.$country.'<br />Mailing Code: '.$zip_code.'</li>' : '<li>Country: '.$country.' '.$zip_code.'</li>';
+			$info_added_message = '<ul id="signup-thanks"><li><em>Name:</em> '.$li_name."</li><li>Email: $email</li>".$li_phone."<li>Address 1: $address_1</li>".$li_address_2."<li>City: $city</li>".$li_country."</ul>";
+						
+ 			if (db_result(db_query("SELECT COUNT(*) FROM {ntctables.mailsignup} WHERE LOWER(email1) = LOWER('%s')", $email)) > 0) {
+ 				db_query("UPDATE {ntctables.mailsignup} SET sal = '%s', first_name = '%s', last_name = '%s', phone_country_code = '%s', phone = '%s', phone_extension = '%s', title = '%s', employer = '%s', employer_type = '%s', role = '%s', address_type = '%s', address1 = '%s', address2 = '%s', city = '%s', state = '%s', country = '%s', mailing_code = '%s' WHERE email1 = '%s'", $sal, $fname, $lname, $cc_phone, $phone, $phone_ext, $title, $employer, $employer_type, $role, $address_type, $address_1, $address_2, $city, $state, $country, $zip_code, $email);
+ 				$message = "Thank you, your information has been updated.";
+ 				$message .= $info_added_message;
+ 				drupal_set_message(t($message));
+ 				//drupal_set_message('<pre>' . print_r($address_type, TRUE) . '</pre>');
+ 			} else {
+				db_query("INSERT INTO {ntctables.mailsignup} (email1, sal, first_name, last_name, phone_country_code, phone, phone_extension, title, employer, employer_type, role, address_type, address1, address2, city, state, country, mailing_code) VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", $email, $sal, $fname, $lname, $cc_phone, $phone, $phone_ext, $title, $employer, $employer_type, $role, $address_type, $address_1, $address_2, $city, $state, $country, $zip_code);
+				//drupal_set_message(t('Thank you for signing up.'));
+				//drupal_set_message('<pre>' . print_r($address_type, TRUE) . '</pre>');
+				//$message='The following information was added:<pre>' . print_r($form_state['values'],true) . '</pre>';
+				$message = "The following items were added:";
+				$message .= $info_added_message; 
+ 				drupal_set_message(t($message));
 			}
 	}
 
@@ -505,6 +547,7 @@ function signup_block($op = 'list', $delta = '', $edit = array()) {
 				// Add additional validation using javaScript
 				drupal_add_js(drupal_get_path('module','signup') . '/js/jquery.validate.min.js');
 				drupal_add_js(drupal_get_path('module','signup') . '/js/jquery.cookie.js');
+				drupal_add_js(drupal_get_path('module','signup') . '/js/jquery.example.js');
 				drupal_add_js(drupal_get_path('module','signup') . '/js/signup.form.js');
 					$block['subject'] = t('eNews Sign up');
 					$block['content'] = drupal_get_form('signup_data_block');
@@ -540,7 +583,9 @@ function signup_data_block_validate($form, &$form_state) {
 
 // Submit block form
 function signup_data_block_submit($form, &$form_state) {
-	drupal_set_message(variable_get('sign_up_update', 'Please provide additional information.'));
+    $signup_message = 'To complete your signup and to serve you better we’d be grateful if you would take a moment to supply us with more information.<br />';
+    $signup_message = 'If you have signed up here previously, then use the same email address to retieve your information and update it appropriately.';
+	drupal_set_message(variable_get('sign_up_update', t($signup_message)));
 }
 
 /**
@@ -557,7 +602,7 @@ function _signup_get_first_dropdown_options() {
 	// drupal_map_assoc() just makes an array('Strings' => 'Strings'...).
 	return drupal_map_assoc(array(
 		t('- select -'), 
-		t('US'), 
+		t('United States'), 
 		t('Canada'),
 		t('Afghanistan'),
 		t('Åland Islands'),
@@ -820,7 +865,7 @@ function _signup_get_second_dropdown_options($key = '') {
 		t('- select -') => drupal_map_assoc(array(
 			t('- select -')
 		)),
-		t('US') => drupal_map_assoc(array(
+		t('United States') => drupal_map_assoc(array(
 			t('- select -'),
 			t('Alabama'),
 			t('Alaska'),
@@ -900,7 +945,7 @@ function _signup_get_second_dropdown_options($key = '') {
 			t('Nunavut'),
 			t('Ontario'),
 			t('Prince Edward Island'),
-			t('Quebec'),
+			t('Québec'),
 			t('Saskatchewan'),
 			t('Yukon Territory')
 		)),
@@ -931,3 +976,41 @@ function signup_valid_email_address($mail) {
 	return preg_match("/^$user@($domain|(\[($ipv4|$ipv6)\]))$/", $mail);
 }
 
+function signup_verify_email($mail) {
+  // Add php email verification file
+  drupal_add_php(drupal_get_path('module','signup') . 'email_verify.php');
+  //call to validateEmail in email_verify.php
+  if (!isset($mail)||$mail==''){
+  	return " Address is blank.";
+  } else {
+    return validateEmail($mail);
+  }
+}// function signup_verify_email
+
+function signup_format_postal_code($zip_code,$country='US'){
+	// formats a postal code in US or International format
+	// for consistent input in to database
+	if($country == 'US'){	
+		$zip_code =  preg_replace('/\D|-*/','', $zip); # remove non-numbers
+	   	$zip_code = (strlen($zip)=='9')? substr($zip,0,5)."-".substr($zip,5,4) : substr($zip,0,5);
+	}
+	return $zip;
+}// end function signup_format_postal_code
+
+function signup_valid_postal_code($zip,$country='US'){
+ 	if ($country == 'US'){
+ 		//$zip =  preg_replace('/\D|-*/', '', trim($zip)); # remove non-numbers;
+ 		//echo "zip: $zip country: $country<br />";
+ 		//echo preg_match('/^[0-9]{5,9}$/', trim ($zip));
+ 		//$zip =  preg_replace('/-/', '', $zip); # remove non-numbers;
+ 		//return  (!(strlen($zip)<5) || preg_match('/^[0-9]{5,9}$/', trim ($zip))); #matches 5-10 digits
+ 		//echo preg_match("/^([0-9]{5})(-[0-9]{4})?$/i",$zip);
+ 		if (!(strlen($zip)<5) && preg_match("/^([0-9]{5})(-[0-9]{4})?$/i",trim($zip))){
+ 			return 1; #matches 5-9 digits
+ 		} else {
+ 			return 0;
+ 		}
+ 	} else {
+ 	  return 1;	//not currently validating zips other than US
+ 	}
+}// end function signup_valid_postalcode
