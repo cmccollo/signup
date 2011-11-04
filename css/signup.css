@@ -7,7 +7,8 @@
 }
 
 #signup-form .form-item input {
-	padding: 6px;
+	padding: 5px;
+	border-radius: 3px;
 }
 
 #signup-form .ahah-progress {
@@ -100,6 +101,18 @@ html.js #edit-continue-to-dependent-dropdown {
 
 #signup-form #edit-country-phone-wrapper .description {
 	margin-left: 135px;
+}
+
+#signup-form #edit-phone-ext-wrapper {
+	float: left;
+}
+
+#signup-form #edit-phone-ext {
+	text-align: right;
+}
+
+#signup-form #edit-phone-ext-wrapper .description {
+	margin-left: 235px;
 }
 
 #signup-form #address-type  .form-radios {
