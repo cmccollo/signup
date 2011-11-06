@@ -49,6 +49,13 @@
 	line-height: 1.75em;
 }
 
+#signup-form #edit-master-dropdown-wrapper .description {
+    position:relative;
+	left: 135px;
+	padding-top: 2px;
+	padding-bottom: 2em;
+}
+
 #signup-form #edit-phone-wrapper label.error {
 	left: 193px !important;
 }
@@ -103,16 +110,29 @@ html.js #edit-continue-to-dependent-dropdown {
 	margin-left: 135px;
 }
 
+#signup-form #edit-phone-ext label.option {
+	width: 2em;
+	margin-right: 5px;
+	text-align: right;
+}
+
 #signup-form #edit-phone-ext-wrapper {
-	float: left;
+	display: inline;
+	position: relative;
+	float: right;
+	margin-right: 30px;
+	width: 75px;
+ 	top: -45px;
 }
 
 #signup-form #edit-phone-ext {
 	text-align: right;
+	width: 68px;
 }
 
 #signup-form #edit-phone-ext-wrapper .description {
-	margin-left: 235px;
+	position: relative;
+	margin-right: 20px;
 }
 
 #signup-form #address-type  .form-radios {
@@ -133,3 +153,8 @@ html.js #edit-continue-to-dependent-dropdown {
 	float: left;
 	clear: none;
 }
+
+#signup-form input.example { color: #777; font-style:italic; } 
+
+#signup-thanks ul { list-style: none;border:0;margin:1.0em 3em; } 
+#signup-thanks ul li { margin-bottom:0.6em; }
