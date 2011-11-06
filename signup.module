@@ -55,6 +55,7 @@ function signup_callback_helper() {
  */
 function signup_init() {
 	drupal_add_css(drupal_get_path('module', 'signup') . '/signup.css');
+	//drupal_add_js(drupal_get_path('module','signup') . '/js/jquery.example.js');
 }
 
 /**
@@ -64,7 +65,8 @@ function signup_init() {
  * @param $my_values
  */
 function signup_form(&$form_state, $my_values = array()) {
-	
+	$form = array();
+
 	// get the list of options to populate the first dropdown
 	$initial_options = _signup_get_first_dropdown_options();
 
@@ -74,7 +76,6 @@ function signup_form(&$form_state, $my_values = array()) {
 	// second dropdown.
 	$master_selection = !empty($form_state['values']['master_dropdown']) ? $form_state['values']['master_dropdown'] : t('- select -');
 
-    $form = array();
 	$form['intro'] = array(
 		'#prefix' => '<div id="form-intro">',
 		'#suffix' => '</div>',
@@ -267,7 +268,7 @@ function signup_form(&$form_state, $my_values = array()) {
 		'#type' => 'textfield',
 		'#title' => t('Address 1'),
 		'#size' => 50,
-		'#required' => FALSE,
+		'#required' => TRUE,
 	);
 	$form['mailing_address']['address_2'] = array(
 		'#type' => 'textfield',
@@ -278,8 +279,8 @@ function signup_form(&$form_state, $my_values = array()) {
 	$form['mailing_address']['city'] = array(
 		'#type' => 'textfield',
 		'#title' => t('City'),
-		'#size' => 30,
-		'#required' => FALSE,
+		'#size' => 25,
+		'#required' => TRUE,
 	);
 	// The CSS for this module hides this next button if JS is enabled.
 	$form['mailing_address']['continue_to_dependent_dropdown'] = array(
@@ -400,22 +401,24 @@ function signup_form_validate($form, &$form_state) {
 	$state = $form_state['values']['dependant_dropdown'];
 	$zip_code = $form_state['values']['zip_code'];
 	
-// 	if (($address_1 == '') && ($address_2 == '')){
-// 	  form_set_error('address_1', t('Please list a postal address so that you may receive our postal mailings.'));
-// 	}
-// 	if ( $city == '' ){
-// 	  form_set_error('city', t('Please list a postal address so that you may receive our postal mailings.'));
-// 	}
+	if (($address_1 == '') && ($address_2 == '')){
+	  form_set_error('address_1', t('Please list a postal address so that you may receive our postal mailings.'));
+	}
+	if ( $city == '' ){
+	  form_set_error('city', t('Please list a postal address so that you may receive our postal mailings.'));
+	}
 	if (!signup_valid_email_address($email)) {
 		form_set_error('email', t('The email address ' . $email . ' is not a valid email address.'));
 	}
-
+	//$mail_err = signup_valid_email_address2($email);
+	//if ( $mail_err!='' ) {
+	//	form_set_error('email', t($mail_err));
+	//}
 	$test_country = ( $country=="US" || $country =="CA" || $country =="United States" || $country =="Canada" )? "US" : "INT";
     if ($test_country=="US"){
-       $msg_err = !( signup_valid_postal_code( $zip_code,$test_country ))? '' : t('Please enter a valid postal code.');
+       $msg_err = !( signup_valid_postal_code( $zip_code,$test_country ))? '' : t('Your postal code is not correctly formatted.');
        //$zip_code = (($msg_err !='') && ( $zip_code != ''))? signup_format_postal_code($zip_code,$test_country) : $zip_code;
     }
-
 
 }// end function signup form validate
 
@@ -976,7 +979,7 @@ function signup_valid_email_address($mail) {
 	return preg_match("/^$user@($domain|(\[($ipv4|$ipv6)\]))$/", $mail);
 }
 
-function signup_verify_email($mail) {
+function signup_valid_email_verify($mail) {
   // Add php email verification file
   drupal_add_php(drupal_get_path('module','signup') . 'email_verify.php');
   //call to validateEmail in email_verify.php
@@ -985,7 +988,7 @@ function signup_verify_email($mail) {
   } else {
     return validateEmail($mail);
   }
-}// function signup_verify_email
+}// function signup_valid_email_address
 
 function signup_format_postal_code($zip_code,$country='US'){
 	// formats a postal code in US or International format
