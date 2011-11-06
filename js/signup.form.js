@@ -16,8 +16,7 @@ $(document).ready(function(){
 			},
 			zip_code: {
 				required: true,
-				digits: true,
-				minlength: 5
+				minlength: 4
 			}
 		},
 		messages: {
@@ -32,12 +31,12 @@ $(document).ready(function(){
 			last: {
 				required: 'Please enter your last name.'
 			},
-// 			address_1: {
-// 				required: 'Please enter your street address.'
-// 			},
-// 			city: {
-// 				required: 'Please enter your city.'
-// 			},
+			address_1: {
+				required: 'Please enter your street address.'
+			},
+			city: {
+				required: 'Please enter your city.'
+			},
 			zip_code: {
 				required: 'Please enter your postal code.'
 			},
