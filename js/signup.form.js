@@ -61,4 +61,18 @@ $(document).ready(function(){
 	$('#signup-form #edit-temp-email').val(cookie);
 	// alert(cookie)
 	
+	$('#signup-form span.form-required').text('(required)').css('font-size','0.85em');
+	
+		$('#signup-form input#edit-email').example('Please confirm your email address.');
+		$('#signup-form input#edit-first').example('Please enter your first name.');
+		$('#signup-form input#edit-last').example('Please enter your last name');
+		$('#signup-form input#edit-phone').example('888.555.1212');
+		$('#signup-form input#edit-phone-ext').example('1254');
+		$('#signup-form input#edit-address-1').example('Postal Street Address (50 chars max)');
+		$('#signup-form input#edit-address-2').example('Suite, Department, School, etc. (50 chars max)');
+		$('#signup-form input#edit-city').example('Postal City');
+		$('#signup-form input#edit-zip-code').example('95060-2243');
+		$('#signup-form input#edit-title').example('Please enter your preferred job title.');
+		$('#signup-form input#edit-employer').example('Please provide the name of your employer');
+	
 });
