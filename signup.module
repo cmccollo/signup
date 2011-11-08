@@ -605,7 +605,7 @@ function _signup_get_second_dropdown_options($key = '') {
 			t('- select -')
 		)),
 		'US' => signup_get_list('usstates'),
-		'CA' => signup_get_list('countries'),
+		'CA' => signup_get_list('castates'),
 	);
 	if (isset($options[$key])) {
 		return $options[$key];
